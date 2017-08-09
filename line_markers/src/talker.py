@@ -10,9 +10,15 @@ def talker():
     rate = rospy.Rate(1)
 
     msg = Points()
+    i = 0.00
     while not rospy.is_shutdown():
-        msg.points = [12.00, random.uniform(10.00, 200.00), random.uniform(10.00, 200.00)]
-        msg.normal = [0.0, 0.0, 1.0]
+        msg.points = [1.00,  random.uniform(0.00, 5.00), 1.00]
+
+        #msg.points = [0.0, i, 0.00]
+        #i = i + random.uniform(0.00, 1.00)
+
+
+        msg.normal = [0.0, random.uniform(0.00, 5.00), random.uniform(0.00, 5.00)]
 
         rospy.loginfo(msg)
         pub.publish(msg)
