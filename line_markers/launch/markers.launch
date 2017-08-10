@@ -1,0 +1,9 @@
+<launch>
+
+	<node pkg="line_markers" type="markers.py" name="markers" output="screen"> </node>
+	<node pkg="line_markers" type="talker.py" name="talker" output="screen"> </node>
+	
+	<node pkg="tf" type="static_transform_publisher" name="map2my_frame" args="0.0 0.0 0.0 0 0 0 1 map my_frame 100" > </node>
+	<node pkg="rviz" type="rviz" name="rviz" > </node>
+	
+</launch>
