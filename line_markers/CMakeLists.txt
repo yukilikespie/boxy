@@ -22,12 +22,15 @@ find_package(catkin REQUIRED COMPONENTS
 #)	
 
 catkin_package(
-	LIBRARIES line_markers
 	CATKIN_DEPENDS rospy std_msgs messages message_runtime visualization_msgs geometry_msgs
 )
+
+
  
 include_directories(
 	include ${catkin_INCLUDE_DIRS}
 )
 
-rosbuild_add_executable(line_markers src/line_markers.py)
+#rosbuild_add_executable(line_markers src/line_markers.py)
+
+catkin_package()

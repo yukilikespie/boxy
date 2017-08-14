@@ -1,26 +1,39 @@
 #!/usr/bin/env python
 import rospy
 import random
-from messages.msg._Points import *
+from messages.msg import *
+from geometry_msgs.msg import *
+from std_msgs.msg import *
 
 
 def talker():
-    pub = rospy.Publisher('line_points', Points, queue_size=10)
+    pub = rospy.Publisher('line_points', Line, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(1)
 
-    msg = Points()
-    i = 0.00
+    msg = Line()
     while not rospy.is_shutdown():
-        msg.points = [1.00,  random.uniform(0.00, 5.00), 1.00]
+        msg.header.frame_id = "/my_frame"
+        msg.header.stamp = rospy.Time.now()
 
-        #msg.points = [0.0, i, 0.00]
-        #i = i + random.uniform(0.00, 1.00)
+        p = Point32()
+        p.x = 0.0
+        p.y = random.uniform(0.00, 5.00)
+        p.z = 0.0
+        msg.line.points.append(p)
 
+        p.x = 0.0
+        p.y = random.uniform(0.00, 5.00)
+        p.z = 0.0
+        msg.line.points.append(p)
 
-        msg.normal = [0.0, random.uniform(0.00, 5.00), random.uniform(0.00, 5.00)]
+        n = Point32()
+        n.x = 0.0
+        n.y = random.uniform(0.00, 5.00)
+        n.z = random.uniform(0.00, 5.00)
+        msg.normal = n
 
-        rospy.loginfo(msg)
+        #rospy.loginfo(msg)
         pub.publish(msg)
 
         rate.sleep()
