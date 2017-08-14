@@ -4,24 +4,24 @@ project(messages)
 find_package(catkin REQUIRED COMPONENTS
 	roscpp 
 	rospy 
+	geometry_msgs
 	std_msgs
 	message_generation
 )
 
 add_message_files(
 	DIRECTORY msg
-	FILES Points.msg
+	FILES Line.msg
 )
 
 generate_messages(
-	DEPENDENCIES
-	std_msgs
+	DEPENDENCIES std_msgs geometry_msgs
 )	
 
 catkin_package(
-	CATKIN_DEPENDS message_runtime std_msgs
+	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs
 )
- 
+
 include_directories(
-	${catkin_INCLUDE_DIRS}
+	INCLUDE ${catkin_INCLUDE_DIRS}
 )
