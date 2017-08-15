@@ -6,7 +6,7 @@ from geometry_msgs.msg import *
 from std_msgs.msg import *
 import math
 
-input_points = [0, 0, 0]
+input_points = []
 input_normal = []
 header = Header()
 
@@ -29,13 +29,7 @@ def frange(start, end=None, step=None):
 def callback(data):
     global header, input_points, input_normal
     header = data.header
-
     input_points = data.line.points
-    print data.line.points[0]
-    print input_points[0]
-    #for data_point in data.line.points:
-    #   input_points.append(data_point)
-
     input_normal.append(data.normal)
 
 
@@ -59,7 +53,7 @@ def markers():
 
         marker_points.id = 0
         marker_lines.id = 1
-        marker_arrows.id = 2
+        marker_arrows.id = 0
 
         marker_points.pose.orientation.w = marker_lines.pose.orientation.w = marker_arrows.pose.orientation.w = 1.0
         marker_points.action = marker_lines.action = marker_arrows.action = Marker.ADD
@@ -98,25 +92,29 @@ def markers():
             p_start = item[0]
             p_end = item[1]
 
-            for point_y in frange(p_start.y, p_end.y, 0.5):
-                p = Point32()
-                p.x = p_start.x
-                p.y = point_y
-                p.z = p_start.z
+            if p_start != 0 or p_end != 0:
+                for point_y in frange(p_start.y, p_end.y, 0.5):
+                    p = Point32()
+                    p.x = p_start.x
+                    p.y = point_y
+                    p.z = p_start.z
 
-                marker_points.points.append(p)
-                marker_lines.points.append(p)
+                    marker_points.points.append(p)
+                    marker_lines.points.append(p)
 
-                marker_arrows.pose.position = p
+                    marker_arrows.pose.position = p
 
+                    marker_arrows.points.append(p)
+                    marker_arrows.id = marker_arrows.id + 1
 
-                marker_arrows.points.append(p)
-                marker_arrows.id = marker_arrows.id + 1
-                pub.publish(marker_arrows)
+                    if len(marker_arrows.points) < 2:
+                        p = Point32()
+                        marker_arrows.points.append(p)
+                    else:
+                        pub.publish(marker_arrows)
 
         pub.publish(marker_points)
         pub.publish(marker_lines)
-
 
         #rospy.loginfo(marker_points)
         #rospy.loginfo(marker_lines)
