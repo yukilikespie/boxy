@@ -4,11 +4,12 @@ from messages.msg import *
 from visualization_msgs.msg import *
 from geometry_msgs.msg import *
 from std_msgs.msg import *
-import math
+
 
 input_points = []
 input_normal = []
 header = Header()
+marker_points = Marker()
 
 
 def frange(start, end=None, step=None):
@@ -43,7 +44,7 @@ def markers():
     rate = rospy.Rate(1)
 
     while not rospy.is_shutdown():
-        marker_points = Marker()
+        global marker_points
         marker_lines = Marker()
         marker_arrows = Marker()
 
@@ -62,14 +63,14 @@ def markers():
         marker_lines.type = Marker.LINE_STRIP
         marker_arrows.type = Marker.ARROW
 
-        marker_points.scale.x = 0.15
-        marker_points.scale.y = 0.15
+        marker_points.scale.x = 0.075
+        marker_points.scale.y = 0.075
 
-        marker_lines.scale.x = 0.1
+        marker_lines.scale.x = 0.05
 
-        marker_arrows.scale.x = 0.7
-        marker_arrows.scale.y = 0.05
-        marker_arrows.scale.z = 0.05
+        marker_arrows.scale.x = 0.35
+        marker_arrows.scale.y = 0.025
+        marker_arrows.scale.z = 0.025
 
         marker_points.color.g = 1.0
         marker_points.color.a = 1.0
@@ -93,7 +94,7 @@ def markers():
             p_end = item[1]
 
             if p_start != 0 or p_end != 0:
-                for point_y in frange(p_start.y, p_end.y, 0.5):
+                for point_y in frange(p_start.y, p_end.y, 0.35):
                     p = Point32()
                     p.x = p_start.x
                     p.y = point_y
@@ -119,6 +120,7 @@ def markers():
         #rospy.loginfo(marker_points)
         #rospy.loginfo(marker_lines)
         #rospy.loginfo(marker_arrows)
+
         rate.sleep()
 
 

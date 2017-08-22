@@ -15,7 +15,7 @@ def talker():
     i = 0.0
     j = 0.0
     while not rospy.is_shutdown():
-        msg.header.frame_id = "/my_frame"
+        msg.header.frame_id = "/base_link"
         msg.header.stamp = rospy.Time.now()
 
         p_start = Point32()
@@ -35,7 +35,7 @@ def talker():
 
         n = Point32()
         n.x = 0.0
-        n.y = random.uniform(-0.2, 0.00)
+        n.y = -0.2 #random.uniform(-0.2, 0.00)
         n.z = 0.0 #random.uniform(0.00, 5.00)
         msg.normal = n
 
