@@ -25,6 +25,7 @@ def create_goal():
         cmd.right_ee.goal_pose.pose.orientation.z = normal.z
 
     for input_point in input_points:
+        print input_point
         p = Point()
 
         p.x = input_point.x

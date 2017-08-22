@@ -12,20 +12,20 @@ def talker():
     rate = rospy.Rate(1)
 
     msg = Line()
-    i = 0.0
+    i = -1.0
     j = 0.0
     while not rospy.is_shutdown():
         msg.header.frame_id = "/base_link"
         msg.header.stamp = rospy.Time.now()
 
         p_start = Point32()
-        p_start.x = 0.0
+        p_start.x = 1.2
         p_start.y = i
         p_start.z = j
         msg.line.points.append(p_start)
 
         p_end = Point32()
-        p_end.x = 0.0
+        p_end.x = 1.2
         p_end.y = i + 2.0
         p_end.z = j
         msg.line.points.append(p_end)
@@ -35,8 +35,8 @@ def talker():
 
         n = Point32()
         n.x = 0.0
-        n.y = -0.2 #random.uniform(-0.2, 0.00)
-        n.z = 0.0 #random.uniform(0.00, 5.00)
+        n.y = -0.4 #random.uniform(-0.2, 0.00)
+        n.z = 4.0 #random.uniform(0.00, 5.00)
         msg.normal = n
 
         #rospy.loginfo(msg)
