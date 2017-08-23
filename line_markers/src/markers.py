@@ -111,17 +111,18 @@ def markers():
                     if len(marker_arrows.points) < 2:
                         p = Point32()
                         marker_arrows.points.append(p)
-                    else:
-                        pub.publish(marker_arrows)
+                    #else:
+                        #pub.publish(marker_arrows)
 
         pub.publish(marker_points)
-        pub.publish(marker_lines)
+        #pub.publish(marker_lines)
 
         #rospy.loginfo(marker_points)
         #rospy.loginfo(marker_lines)
         #rospy.loginfo(marker_arrows)
 
         rate.sleep()
+        #rospy.sleep(0.05)
 
 
 if __name__ == '__main__':
