@@ -9,6 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
 	messages
 	visualization_msgs
 	geometry_msgs
+	giskard_msgs
+	genmsg
+	actionlib_msgs
+	actionlib
 )
 
 #add_message_files(
@@ -22,15 +26,11 @@ find_package(catkin REQUIRED COMPONENTS
 #)	
 
 catkin_package(
-	CATKIN_DEPENDS rospy std_msgs messages message_runtime visualization_msgs geometry_msgs
+	CATKIN_DEPENDS rospy std_msgs messages message_runtime visualization_msgs geometry_msgs giskard_msgs
 )
-
-
  
 include_directories(
 	include ${catkin_INCLUDE_DIRS}
 )
-
-#rosbuild_add_executable(line_markers src/line_markers.py)
 
 catkin_package()
