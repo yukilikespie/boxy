@@ -1,46 +1,49 @@
 #!/usr/bin/env python
+
 import rospy
-import random
-from messages.msg import *
+import std_msgs.msg
 from geometry_msgs.msg import *
-from std_msgs.msg import *
+from messages.msg import *
 
 
 def talker():
     pub = rospy.Publisher('line_points', Line, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
+    rospy.init_node('point_publisher', anonymous=True)
     rate = rospy.Rate(1)
 
     msg = Line()
-    i = -1.0
-    j = 0.0
+    a = 1
+
+    p = Point32()
+    p.x = 1.0
+    p.y = -0.5
+    p.z = 0.6
+
     while not rospy.is_shutdown():
-        msg.header.frame_id = "/base_link"
+        msg.header.frame_id = "base_link"
         msg.header.stamp = rospy.Time.now()
 
-        p_start = Point32()
-        p_start.x = 1.2
-        p_start.y = i
-        p_start.z = j
-        msg.line.points.append(p_start)
-
-        p_end = Point32()
-        p_end.x = 1.2
-        p_end.y = i + 2.0
-        p_end.z = j
-        msg.line.points.append(p_end)
-
-        #i = i + random.uniform(2.0, 7.00)
-        j = j + 0.5
+        if a % 2 == 0:
+            p.x = 1.1
+            p.y = -0.5
+            #p.z = 0.5
+        else:
+            p.x = 1.1
+            p.y += 0.4
+            p.z += 0.10
 
         n = Point32()
         n.x = 0.0
-        n.y = -0.4 #random.uniform(-0.2, 0.00)
-        n.z = 4.0 #random.uniform(0.00, 5.00)
+        n.y = 1.0
+        n.z = 0.0
         msg.normal = n
 
-        #rospy.loginfo(msg)
-        pub.publish(msg)
+        a += 1
+
+        if a > 4:
+            msg.line.points.append(p)
+            pub.publish(msg)
+            rospy.loginfo(msg)
 
         rate.sleep()
 

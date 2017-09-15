@@ -6,51 +6,45 @@ from geometry_msgs.msg import *
 from visualization_msgs.msg import *
 from std_msgs.msg import *
 
-cmd = WholeBodyCommand()
-marker_points = []
+command = WholeBodyCommand()
+marker_points = Point()
 header = Header()
 input_points = []
+input_normal = []
+
+start_point = Point32(1.0, -0.4, 1.3)
+start_normal = Point32(0.0, 1.0, 0.0)
+aux = 0
 
 
-def create_goal(normal, input_point):
-    global cmd
-    cmd.type = 0
+def create_goal():
+    global input_points, input_normal, aux, start_point, start_normal
 
+    command.type = 0
     header.frame_id = "base_link"
-    cmd.right_ee.goal_pose.header = header
-    cmd.right_ee.type = 1
 
-    cmd.right_ee.goal_pose.pose.orientation.w = 1.0
+    command.right_ee.goal_pose.header = header
+    command.right_ee.type = 1
+    command.right_ee.goal_pose.pose.orientation.w = 1.0
 
-    # cmd.right_ee.goal_pose.pose.orientation.x = normal.x
-    # cmd.right_ee.goal_pose.pose.orientation.y = normal.y
-    # cmd.right_ee.goal_pose.pose.orientation.z = normal.z
+    if len(input_points) >= 3:
+        command.right_ee.goal_pose.pose.orientation.x = round(input_normal[aux].x, 2)
+        command.right_ee.goal_pose.pose.orientation.y = round(input_normal[aux].y, 2)
+        command.right_ee.goal_pose.pose.orientation.z = round(input_normal[aux].z, 2)
 
-    cmd.right_ee.goal_pose.pose.orientation.x = 0.0
-    cmd.right_ee.goal_pose.pose.orientation.y = -0.4
-    cmd.right_ee.goal_pose.pose.orientation.z = 4.0 + 0.1
+        command.right_ee.goal_pose.pose.position.x = round(input_points[aux].x, 2)
+        command.right_ee.goal_pose.pose.position.y = round(input_points[aux].y, 2)
+        command.right_ee.goal_pose.pose.position.z = round(input_points[aux].z, 2)
 
-    #print input_point
-    p = Point()
+        aux += 1
+    else:
+        command.right_ee.goal_pose.pose.position = start_point
 
-    #p.x = input_point.x
-    #p.y = input_point.y
-    #p.z = input_point.z
+        command.right_ee.goal_pose.pose.orientation.x = start_normal.x
+        command.right_ee.goal_pose.pose.orientation.y = start_normal.y
+        command.right_ee.goal_pose.pose.orientation.z = start_normal.z
 
-   # p.x = 1.2 + 0.36
-    #p.y = -1.0 + 0.25
-    #p.z = 0.0 + 0.16
-    #
-    p.x = 1.0
-    p.y = 0.0
-    p.z = 1.2
-
-    cmd.right_ee.goal_pose.pose.position = p
-
-    goal = WholeBodyGoal(command=cmd)
-    #goal.header = header
-    #goal.goal = cmd
-    #rospy.loginfo(goal)
+    goal = WholeBodyGoal(command=command)
     return goal
 
 
@@ -61,45 +55,42 @@ def action_client():
     client.wait_for_server()
     rospy.loginfo("Action server started, sending goal.")
 
-    for input_point in marker_points:
-        normal = Point()
+    goal = create_goal()
+    rospy.loginfo(goal.command.right_ee.goal_pose.pose)
 
-        goal = create_goal(normal, input_point)
-        print goal
+    client.send_goal(goal)
+    finished_before_timeout = client.wait_for_result(rospy.Duration(30))
 
-        client.send_goal(goal)
-        client.wait_for_result()
-
-        if client.get_state() == actionlib.SimpleGoalState.DONE:
-            rospy.loginfo("Made it!")
-        else:
-            rospy.loginfo("Failed.")
-
-    #return client.get_result()
+    if finished_before_timeout:
+        state = client.get_state()
+        rospy.loginfo("Action finished:" + str(state))
+    else:
+        rospy.loginfo("Action did not finish before the timeout.")
 
 
 def callback(data):
-    global header, marker_points
-    header = data.header
+    global header, input_points, input_normal
 
-    if data.type == Marker.POINTS:
-        marker_points.extend(data.points)
-    #print marker_points
-    #elif data.type == Marker.ARROW:
+    if data.ns == "points":
+        header = data.header
+        input_points.append(data.pose.position)
+    elif data.ns == "normal":
+        input_normal.append(data.pose.orientation)
 
 
 def listener():
     rospy.Subscriber("visualization_marker", Marker, callback)
-    #rospy.spin()
 
 
 if __name__ == '__main__':
     rospy.init_node("action_client", anonymous=True)
-    listener()
 
-    try:
-        action_client()
-    except rospy.ROSInterruptException:
-        print("Program interrupted before completion.")
-    except (KeyboardInterrupt, SystemExit):
-        sys.exit(1)
+    while not rospy.is_shutdown():
+        listener()
+
+        try:
+            action_client()
+        except rospy.ROSInterruptException:
+            print("Program interrupted before completion.")
+        except (KeyboardInterrupt, SystemExit):
+            sys.exit(1)
